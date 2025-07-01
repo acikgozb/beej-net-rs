@@ -1,22 +1,26 @@
-use std::process::ExitCode;
+use std::{error, process::ExitCode};
 
 use clap::{Parser, Subcommand, command};
 
 fn main() -> ExitCode {
-    let cli = Cli::parse();
-
-    let result = match cli.examples {
-        Examples::ShowIp { host } => beej_net_rs::showip(&host),
-        Examples::Socket => beej_net_rs::socket(),
-    };
-
-    match result {
+    match run() {
         Ok(_) => ExitCode::SUCCESS,
-        Err(ecode) => {
-            let ecode = u8::try_from(ecode).ok().unwrap_or(1u8);
-            ExitCode::from(ecode)
+        Err(err) => {
+            eprintln!("{}", err);
+            ExitCode::FAILURE
         }
     }
+}
+
+fn run() -> Result<(), Box<dyn error::Error>> {
+    let cli = Cli::parse();
+
+    match cli.examples {
+        Examples::ShowIp { host } => beej_net_rs::showip(&host)?,
+        Examples::Socket => beej_net_rs::socket()?,
+    };
+
+    Ok(())
 }
 
 #[derive(Parser)]
