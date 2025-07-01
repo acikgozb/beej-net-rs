@@ -7,6 +7,7 @@ fn main() -> ExitCode {
 
     let result = match cli.examples {
         Examples::ShowIp { host } => beej_net_rs::showip(&host),
+        Examples::Socket => beej_net_rs::socket(),
     };
 
     match result {
@@ -27,7 +28,11 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Examples {
-    /// Section 5.1 - getaddrinfo()
+    /// Section 5.1 - `getaddrinfo()` - Prepare to Launch!
     #[clap(name = "showip")]
     ShowIp { host: String },
+
+    /// Section 5.2 - `socket()` - Get the File Descriptor!
+    #[clap(name = "sock")]
+    Socket,
 }
