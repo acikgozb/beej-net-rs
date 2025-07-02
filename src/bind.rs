@@ -33,6 +33,7 @@ pub fn bind() -> Result<(), Error> {
     let service = CString::new("3490").unwrap();
     let service_ptr = service.as_ptr();
 
+    // SAFETY: hints is initialized as empty, but the required fields are set later on.
     let mut hints: libc::addrinfo = unsafe { mem::zeroed() };
     hints.ai_family = libc::AF_UNSPEC;
     hints.ai_socktype = libc::SOCK_STREAM;
@@ -40,6 +41,15 @@ pub fn bind() -> Result<(), Error> {
 
     let mut res_ptr: *mut libc::addrinfo = ptr::null_mut();
 
+    // SAFETY:
+    // 1 - all the required vars are initialized for getaddrinfo().
+    // gai_stderror() is used for error cases only.
+    // The memory used by getaddrinfo() is cleaned up at the end.
+    // 2 - It is guaranteed to get atleast one address from getaddrinfo(),
+    // due to using the loopback address and a port that does not need privileged access. This makes socket() safe to use.
+    // 4 - For bind(), the created sock fd is used and due to getaddrinfo() returning a valid response, bind() reads valid memory.
+    //
+    // Having a one big unsafe block is just for showcase purposes.
     unsafe {
         let s = libc::getaddrinfo(node_ptr, service_ptr, &hints, &mut res_ptr);
         if s != 0 {
