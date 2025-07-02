@@ -49,7 +49,7 @@ pub fn bind() -> Result<(), Error> {
     // The memory used by getaddrinfo() is cleaned up at the end.
     // 2 - It is guaranteed to get atleast one address from getaddrinfo(),
     // due to using the loopback address and a port that does not need privileged access. This makes socket() safe to use.
-    // 4 - For bind(), the created sock fd is used and due to getaddrinfo() returning a valid response, bind() reads valid memory.
+    // 3 - For bind(), the created sock fd is used and due to getaddrinfo() returning a valid response, bind() reads valid memory.
     //
     // Having a one big unsafe block is just for showcase purposes.
     unsafe {

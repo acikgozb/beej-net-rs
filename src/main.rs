@@ -22,6 +22,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
             true => beej_net_rs::reuse_port()?,
             false => beej_net_rs::bind()?,
         },
+        Examples::Connect => beej_net_rs::connect()?,
     };
 
     Ok(())
@@ -50,4 +51,7 @@ pub enum Examples {
         #[arg(short, long, default_value_t = false)]
         reuse_port: bool,
     },
+
+    /// Section 5.4 - `connect()` - Hey, you!
+    Connect,
 }
