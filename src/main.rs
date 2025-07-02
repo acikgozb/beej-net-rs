@@ -18,6 +18,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
     match cli.examples {
         Examples::ShowIp { host } => beej_net_rs::showip(&host)?,
         Examples::Socket => beej_net_rs::socket()?,
+        Examples::Bind => beej_net_rs::bind()?,
     };
 
     Ok(())
@@ -39,4 +40,7 @@ pub enum Examples {
     /// Section 5.2 - `socket()` - Get the File Descriptor!
     #[clap(name = "sock")]
     Socket,
+
+    /// Section 5.3 - `bind()` - What Port Am I On?
+    Bind,
 }
