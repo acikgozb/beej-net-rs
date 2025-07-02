@@ -18,7 +18,10 @@ fn run() -> Result<(), Box<dyn error::Error>> {
     match cli.examples {
         Examples::ShowIp { host } => beej_net_rs::showip(&host)?,
         Examples::Socket => beej_net_rs::socket()?,
-        Examples::Bind => beej_net_rs::bind()?,
+        Examples::Bind { reuse_port } => match reuse_port {
+            true => beej_net_rs::reuse_port()?,
+            false => beej_net_rs::bind()?,
+        },
     };
 
     Ok(())
@@ -42,5 +45,9 @@ pub enum Examples {
     Socket,
 
     /// Section 5.3 - `bind()` - What Port Am I On?
-    Bind,
+    Bind {
+        /// Set SO_REUSEADDR socket option.
+        #[arg(short, long, default_value_t = false)]
+        reuse_port: bool,
+    },
 }
