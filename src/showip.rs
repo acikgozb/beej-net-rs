@@ -35,7 +35,7 @@ pub fn showip(host: &str) -> Result<(), Error> {
     hints.ai_family = libc::AF_UNSPEC;
     hints.ai_socktype = libc::SOCK_STREAM;
 
-    let mut res_ptr: *mut libc::addrinfo = ptr::null_mut();
+    let mut res_ptr = ptr::null_mut();
 
     // SAFETY: all the required vars are initialized for getaddrinfo().
     // gai_stderror() is used for error cases only.
@@ -50,13 +50,14 @@ pub fn showip(host: &str) -> Result<(), Error> {
     println!("IP addresses for {}: \n\n", host);
 
     while !res_ptr.is_null() {
-        // SAFETY: res_ptr is filled by getaddrinfo().
+        // SAFETY: As long as the pointer is not null, we know that it points to a valid libc::addrinfo initialized by getaddrinfo().
+        // We do not deref the pointer when it becomes null (aka at the end of the addrinfo list).
         let res = unsafe { *res_ptr };
 
-        let addr = match res.ai_family as i32 {
+        let addr = match res.ai_family {
             libc::AF_INET => {
                 let sock_ipv4 = res.ai_addr as *const libc::sockaddr_in;
-                // SAFETY: sock_ipv4 exists in res_ptr after getaddrinfo().
+                // SAFETY: sock_ipv4 points to an initialized memory after getaddrinfo().
                 let bits = unsafe { (*sock_ipv4).sin_addr.s_addr };
 
                 IpAddr::V4(Ipv4Addr::from_bits(bits))
@@ -64,8 +65,8 @@ pub fn showip(host: &str) -> Result<(), Error> {
 
             libc::AF_INET6 => {
                 let sock_ipv6 = res.ai_addr as *const libc::sockaddr_in6;
-                // SAFETY: sock_ipv6 exists in res_ptr after getaddrinfo().
-                // sock_ipv6 encodes IPv6 (16 bytes) as fixed 16 length array containing each byte. Therefore, it is safe to call transmute().
+                // SAFETY: sock_ipv6 points to an initialized memory after getaddrinfo().
+                // *sock_ipv6 points an IPv6 (16 bytes) as fixed 16 length array containing each byte. Therefore, it is safe to call transmute().
                 let bits = unsafe {
                     let addr = (*sock_ipv6).sin6_addr.s6_addr;
                     mem::transmute::<[u8; 16], u128>(addr)

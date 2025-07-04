@@ -41,15 +41,11 @@ pub fn bind() -> Result<(), Error> {
     hints.ai_socktype = libc::SOCK_STREAM;
     hints.ai_flags = libc::AI_PASSIVE;
 
-    let mut res_ptr: *mut libc::addrinfo = ptr::null_mut();
+    let mut res_ptr = ptr::null_mut();
 
     // SAFETY:
-    // 1 - all the required vars are initialized for getaddrinfo().
+    // All the required vars are initialized for getaddrinfo().
     // gai_stderror() is used for error cases only.
-    // The memory used by getaddrinfo() is cleaned up at the end.
-    // 2 - It is guaranteed to get atleast one address from getaddrinfo(),
-    // due to using the loopback address and a port that does not need privileged access. This makes socket() safe to use.
-    // 3 - For bind(), the created sock fd is used and due to getaddrinfo() returning a valid response, bind() reads valid memory.
     //
     // Having a one big unsafe block is just for showcase purposes.
     unsafe {
@@ -60,6 +56,8 @@ pub fn bind() -> Result<(), Error> {
             return Err(Error::Getaddrinfo(c_err.into_owned()));
         }
 
+        // SAFETY: `res_ptr` is initialized upon a successful getaddrinfo() call.
+        // Therefore we can guarantee that there is atleast one addrinfo that `res_ptr` points to, making deref safe in the usages below.
         let res = *res_ptr;
 
         let sock_fd = libc::socket(res.ai_family, res.ai_socktype, 0);
@@ -68,12 +66,14 @@ pub fn bind() -> Result<(), Error> {
             return Err(Error::Socket(err));
         }
 
+        // SAFETY: `bind()` is called on a valid `sock_fd` upon a successful `socket()` call.
         let s = libc::bind(sock_fd, res.ai_addr, res.ai_addrlen);
         if s != 0 {
             let err = io::Error::last_os_error();
             return Err(Error::Bind(sock_fd, err));
         }
 
+        // SAFETY: `res_ptr` will not be used after this call, therefore it is safe to free it.
         libc::freeaddrinfo(res_ptr);
     }
 
@@ -100,16 +100,11 @@ pub fn reuse_port() -> Result<(), Error> {
     hints.ai_flags = libc::AI_PASSIVE;
     hints.ai_socktype = libc::SOCK_STREAM;
 
-    let mut res_ptr: *mut libc::addrinfo = ptr::null_mut();
+    let mut res_ptr = ptr::null_mut();
 
     // SAFETY:
-    // 1 - all the required vars are initialized for getaddrinfo().
+    // All the required vars are initialized for getaddrinfo().
     // gai_stderror() is used for error cases only.
-    // The memory used by getaddrinfo() is cleaned up at the end.
-    // 2 - It is guaranteed to get atleast one address from getaddrinfo(),
-    // due to using the loopback address and a port that does not need privileged access. This makes socket() safe to use.
-    // 3 - The memory accessed by setsockopt() is filled and valid to use.
-    // 4 - For bind(), the created sock fd is used and due to getaddrinfo() returning a valid response, bind() reads valid memory.
     //
     // Having a one big unsafe block is just for showcase purposes.
     unsafe {
@@ -119,6 +114,8 @@ pub fn reuse_port() -> Result<(), Error> {
             return Err(Error::Getaddrinfo(err.into_owned()));
         }
 
+        // SAFETY: `res_ptr` is initialized upon a successful `getaddrinfo()` call.
+        // Therefore we can guarantee that there is atleast one addrinfo that `res_ptr` points to, making deref safe in the usages below.
         let res = *res_ptr;
 
         let sock_fd = libc::socket(res.ai_family, res.ai_socktype, 0);
@@ -129,6 +126,7 @@ pub fn reuse_port() -> Result<(), Error> {
 
         let reuse_addr = 1;
 
+        // SAFETY: `setsockopt()` is called for a valid sock_fd created by a successful `socket()` call.
         let s = libc::setsockopt(
             sock_fd,
             libc::SOL_SOCKET,
@@ -141,12 +139,14 @@ pub fn reuse_port() -> Result<(), Error> {
             return Err(Error::SocketOpt(err));
         }
 
+        // SAFETY: `bind()` is called on a valid `sock_fd` upon a successful `socket()` call.
         let s = libc::bind(sock_fd, res.ai_addr, res.ai_addrlen);
         if s != 0 {
             let err = io::Error::last_os_error();
             return Err(Error::Bind(sock_fd, err));
         }
 
+        // SAFETY: `res_ptr` will not be used after this call, therefore it is safe to free it.
         libc::freeaddrinfo(res_ptr);
     }
 

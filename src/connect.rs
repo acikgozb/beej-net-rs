@@ -39,16 +39,11 @@ pub fn connect() -> Result<(), Error> {
     hints.ai_family = libc::AF_UNSPEC;
     hints.ai_socktype = libc::SOCK_STREAM;
 
-    let mut res_ptr: *mut libc::addrinfo = ptr::null_mut();
+    let mut res_ptr = ptr::null_mut();
 
     // SAFETY:
-    // 1 - all the required vars are initialized for getaddrinfo().
+    // All the required vars are initialized for getaddrinfo().
     // gai_stderror() is used for error cases only.
-    // The memory used by getaddrinfo() is cleaned up at the end.
-    // 2 - It is guaranteed to get atleast one address from getaddrinfo(),
-    // because the address we use is publicly available on the Internet. This makes socket() safe to use.
-    // 3 - The sock fd used in connect() is properly configured by using the single source of truth, getaddrinfo().
-    // 4 - The errors are checked based on the return values of getaddrinfo(), socket(), and connect().
     //
     // Having a one big unsafe block is just for showcase purposes.
     unsafe {
@@ -58,6 +53,8 @@ pub fn connect() -> Result<(), Error> {
             return Err(Error::Getaddrinfo(err.into_owned()));
         }
 
+        // SAFETY: `res_ptr` is initialized upon a successful `getaddrinfo()` call.
+        // Therefore we can guarantee that there is atleast one addrinfo that `res_ptr` points to, making deref safe in the usages below.
         let res = *res_ptr;
 
         let sock_fd = libc::socket(res.ai_family, res.ai_socktype, 0);
@@ -66,12 +63,14 @@ pub fn connect() -> Result<(), Error> {
             return Err(Error::Socket(err));
         }
 
+        // SAFETY: `connect()` is called on a valid `sock_fd` upon a successful `socket()` call.
         let s = libc::connect(sock_fd, res.ai_addr, res.ai_addrlen);
         if s == -1 {
             let err = io::Error::last_os_error();
             return Err(Error::Connect(sock_fd, err));
         }
 
+        // SAFETY: `res_ptr` will not be used after this call, therefore it is safe to free it.
         libc::freeaddrinfo(res_ptr);
     }
 
