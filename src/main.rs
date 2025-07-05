@@ -28,6 +28,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
             let _ = beej_net_rs::accept()?;
         }
         Examples::Send => beej_net_rs::send()?,
+        Examples::Recv => beej_net_rs::recv()?,
     };
 
     Ok(())
@@ -69,8 +70,22 @@ pub enum Examples {
     /// Section 5.7 - `send() and recv()` - Talk to me, baby!
     ///
     /// To test the example:
-    /// 1 - Run this command in the background.
-    /// 2 - Find out the listened IP address (IP or IPv6) via `lsof -iTCP:3490` or via any command you prefer.
-    /// 3 - Initiate a connection to see the sent data. The easiest would probably be `ncat <IP_ADDR> 3940`.
+    ///
+    /// Run this command in the background.
+    ///
+    /// Find out the listened IP address (IP or IPv6) via `lsof -niTCP:3490` or via any command you prefer.
+    ///
+    /// Initiate a connection to see the sent data. The easiest would probably be `ncat <IP_ADDR> 3490`.
     Send,
+
+    /// Section 5.7 - `send() and recv()` - Talk to me, baby!
+    ///
+    /// To test this example:
+    ///
+    /// Run this command in the background.
+    ///
+    /// Find out the listened IP address (IP or IPv6) via `lsof -niTCP:3490` or via any command you prefer.
+    ///
+    /// Initiate a connection and send a message to the process. The easiest would be `ncat <IP_ADDR> 3490 <<< "string message"
+    Recv,
 }
