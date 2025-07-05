@@ -33,7 +33,7 @@ impl error::Error for Error {}
 // MANPAGES:
 // man 2 accept (Linux)
 // man 3 accept (POSIX)
-pub fn accept() -> Result<(), Error> {
+pub fn accept() -> Result<i32, Error> {
     let node = ptr::null() as *const libc::c_char;
     let port = CString::from(c"3490");
 
@@ -134,5 +134,5 @@ pub fn accept() -> Result<(), Error> {
 
     println!("sock fd of accepted connection: {}", conn_sock_fd);
 
-    Ok(())
+    Ok(conn_sock_fd)
 }

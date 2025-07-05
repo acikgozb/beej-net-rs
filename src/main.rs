@@ -24,7 +24,10 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         },
         Examples::Connect => beej_net_rs::connect()?,
         Examples::Listen => beej_net_rs::listen()?,
-        Examples::Accept => beej_net_rs::accept()?,
+        Examples::Accept => {
+            let _ = beej_net_rs::accept()?;
+        }
+        Examples::Send => beej_net_rs::send()?,
     };
 
     Ok(())
@@ -62,4 +65,12 @@ pub enum Examples {
 
     /// Section 5.6 - `accept()` - "Thank you for calling port 3490."
     Accept,
+
+    /// Section 5.7 - `send() and recv()` - Talk to me, baby!
+    ///
+    /// To test the example:
+    /// 1 - Run this command in the background.
+    /// 2 - Find out the listened IP address (IP or IPv6) via `lsof -iTCP:3490` or via any command you prefer.
+    /// 3 - Initiate a connection to see the sent data. The easiest would probably be `ncat <IP_ADDR> 3940`.
+    Send,
 }
