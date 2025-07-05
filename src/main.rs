@@ -23,6 +23,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
             false => beej_net_rs::bind()?,
         },
         Examples::Connect => beej_net_rs::connect()?,
+        Examples::Listen => beej_net_rs::listen()?,
     };
 
     Ok(())
@@ -54,4 +55,7 @@ pub enum Examples {
 
     /// Section 5.4 - `connect()` - Hey, you!
     Connect,
+
+    /// Section 5.5 - `listen()` - Will Somebody Please Call Me?
+    Listen,
 }
