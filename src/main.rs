@@ -24,6 +24,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         },
         Examples::Connect => beej_net_rs::connect()?,
         Examples::Listen => beej_net_rs::listen()?,
+        Examples::Accept => beej_net_rs::accept()?,
     };
 
     Ok(())
@@ -58,4 +59,7 @@ pub enum Examples {
 
     /// Section 5.5 - `listen()` - Will Somebody Please Call Me?
     Listen,
+
+    /// Section 5.6 - `accept()` - "Thank you for calling port 3490."
+    Accept,
 }
