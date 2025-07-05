@@ -24,7 +24,9 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         },
         Examples::Connect => beej_net_rs::connect()?,
         Examples::Listen => beej_net_rs::listen()?,
-        Examples::Accept => beej_net_rs::accept()?,
+        Examples::Accept => {
+            let _ = beej_net_rs::accept()?;
+        }
     };
 
     Ok(())
