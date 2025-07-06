@@ -24,7 +24,7 @@ impl fmt::Display for Error {
 impl error::Error for Error {}
 
 // EXAMPLE: Send a message via a SOCK_DGRAM socket to the UDP server on localhost (INET), on port 3490.
-// MANPAGES:
+// MANPAGE:
 // man 2 sendto (Linux)
 // man 3 sendto (POSIX)
 pub fn sendto() -> Result<(), Error> {

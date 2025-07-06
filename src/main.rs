@@ -31,6 +31,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Examples::Recv => beej_net_rs::recv()?,
         Examples::Sendto => beej_net_rs::sendto()?,
         Examples::Recvfrom => beej_net_rs::recvfrom()?,
+        Examples::Close => beej_net_rs::close()?,
     };
 
     Ok(())
@@ -104,4 +105,7 @@ pub enum Examples {
     /// Send a UDP message from a separate terminal session by using `ncat -u 127.0.0.1 3490 <<< "hello UDP message!"` or via any command you prefer.
     /// Observe that the message "hello UDP message!" appears on our process' terminal session.
     Recvfrom,
+
+    /// Section 5.9 - `close() and shutdown()` - Get outta my face!
+    Close,
 }
