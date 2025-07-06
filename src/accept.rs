@@ -58,7 +58,7 @@ pub fn accept() -> Result<i32, Error> {
         }
     }?;
 
-    // SAFETY: Since we are trying to get our local public IP address via `getaddrinfo()`, we know that `res_ptr` points to an initialized memory, making `socket()` safe to use.
+    // SAFETY: Since we are trying to get our loopback IP address via `getaddrinfo()`, we know that `res_ptr` points to an initialized memory, making `socket()` safe to use.
     // Any potential `socket()` error is checked by reading `errno` instantly after the `socket()` call. This ensures that `sock_fd` contains the fd of a successfully created socket.
     let sock_fd = unsafe {
         let res = *res_ptr;
