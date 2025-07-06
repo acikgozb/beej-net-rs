@@ -32,6 +32,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Examples::Sendto => beej_net_rs::sendto()?,
         Examples::Recvfrom => beej_net_rs::recvfrom()?,
         Examples::Close => beej_net_rs::close()?,
+        Examples::Shutdown => beej_net_rs::shutdown()?,
     };
 
     Ok(())
@@ -108,4 +109,13 @@ pub enum Examples {
 
     /// Section 5.9 - `close() and shutdown()` - Get outta my face!
     Close,
+
+    /// Section 5.9 - `close() and shutdown()` - Get outta my face!
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "TCP" server.
+    /// Connect to this server in a separate terminal session by using `ncat 127.0.0.1 3490` or via any command you prefer.
+    /// Observe that the server cannot send a message due to EPIPE error, which happens because of `shutdown()`.
+    Shutdown,
 }
