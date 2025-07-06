@@ -8,6 +8,7 @@ mod recvfrom;
 mod send;
 mod sendto;
 mod showip;
+mod shutdown;
 mod socket;
 
 pub use accept::accept;
@@ -20,4 +21,5 @@ pub use recvfrom::recvfrom;
 pub use send::send;
 pub use sendto::sendto;
 pub use showip::showip;
+pub use shutdown::shutdown;
 pub use socket::socket;
