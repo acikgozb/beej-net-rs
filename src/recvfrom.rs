@@ -27,7 +27,7 @@ impl fmt::Display for Error {
 impl error::Error for Error {}
 
 // EXAMPLE: Receive a message that comes to a named SOCK_DGRAM socket on localhost (INET), on port 3490.
-// MANPAGES:
+// MANPAGE:
 // man 2 recvfrom (Linux)
 // man 3 recvfrom (POSIX)
 pub fn recvfrom() -> Result<(), Error> {
