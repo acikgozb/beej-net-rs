@@ -29,6 +29,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         }
         Examples::Send => beej_net_rs::send()?,
         Examples::Recv => beej_net_rs::recv()?,
+        Examples::Sendto => beej_net_rs::sendto()?,
     };
 
     Ok(())
@@ -72,9 +73,7 @@ pub enum Examples {
     /// To test the example:
     ///
     /// Run this command in the background.
-    ///
     /// Find out the listened IP address (IP or IPv6) via `lsof -niTCP:3490` or via any command you prefer.
-    ///
     /// Initiate a connection to see the sent data. The easiest would probably be `ncat <IP_ADDR> 3490`.
     Send,
 
@@ -83,9 +82,16 @@ pub enum Examples {
     /// To test this example:
     ///
     /// Run this command in the background.
-    ///
     /// Find out the listened IP address (IP or IPv6) via `lsof -niTCP:3490` or via any command you prefer.
-    ///
-    /// Initiate a connection and send a message to the process. The easiest would be `ncat <IP_ADDR> 3490 <<< "string message"
+    /// Initiate a connection and send a message to the process. The easiest would be `ncat <IP_ADDR> 3490 <<< "string message"`.
     Recv,
+
+    /// Section 5.8 - `sendto() and recvfrom()` - Talk to me, DGRAM-style
+    ///
+    /// To test this example:
+    ///
+    /// Boot up a UDP server listening on localhost, on port 3490 by using `ncat -ul 127.0.0.1 3490`.
+    /// Run this command in a separate terminal session.
+    /// Observe that the message "hello world!" appears on the UDP server's terminal session.
+    Sendto,
 }

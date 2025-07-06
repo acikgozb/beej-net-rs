@@ -4,6 +4,7 @@ mod connect;
 mod listen;
 mod recv;
 mod send;
+mod sendto;
 mod showip;
 mod socket;
 
@@ -13,5 +14,6 @@ pub use connect::connect;
 pub use listen::listen;
 pub use recv::recv;
 pub use send::send;
+pub use sendto::sendto;
 pub use showip::showip;
 pub use socket::socket;
