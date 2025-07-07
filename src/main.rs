@@ -34,6 +34,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Examples::Close => beej_net_rs::close()?,
         Examples::Shutdown => beej_net_rs::shutdown()?,
         Examples::Getpeername => beej_net_rs::getpeername()?,
+        Examples::Gethostname => beej_net_rs::gethostname()?,
     };
 
     Ok(())
@@ -128,4 +129,7 @@ pub enum Examples {
     /// Connect to this server in a separate terminal session by using `ncat 127.0.0.1 3490` or via any command you prefer.
     /// Observe that our server writes the source IP address and it's port to the stdout.
     Getpeername,
+
+    /// Section 5.11 - `gethostname()` - Who am I?
+    Gethostname,
 }
