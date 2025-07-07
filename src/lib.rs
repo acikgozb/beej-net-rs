@@ -12,6 +12,7 @@ mod sendto;
 mod showip;
 mod shutdown;
 mod socket;
+mod stream;
 
 pub use accept::accept;
 pub use bind::{bind, reuse_port};
@@ -27,3 +28,4 @@ pub use sendto::sendto;
 pub use showip::showip;
 pub use shutdown::shutdown;
 pub use socket::socket;
+pub use stream::server as stream_server;

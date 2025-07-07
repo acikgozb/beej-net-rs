@@ -15,26 +15,29 @@ fn main() -> ExitCode {
 fn run() -> Result<(), Box<dyn error::Error>> {
     let cli = Cli::parse();
 
-    match cli.examples {
-        Examples::ShowIp { host } => beej_net_rs::showip(&host)?,
-        Examples::Socket => beej_net_rs::socket()?,
-        Examples::Bind { reuse_port } => match reuse_port {
+    match cli.example {
+        Example::ShowIp { host } => beej_net_rs::showip(&host)?,
+        Example::Socket => beej_net_rs::socket()?,
+        Example::Bind { reuse_port } => match reuse_port {
             true => beej_net_rs::reuse_port()?,
             false => beej_net_rs::bind()?,
         },
-        Examples::Connect => beej_net_rs::connect()?,
-        Examples::Listen => beej_net_rs::listen()?,
-        Examples::Accept => {
+        Example::Connect => beej_net_rs::connect()?,
+        Example::Listen => beej_net_rs::listen()?,
+        Example::Accept => {
             let _ = beej_net_rs::accept()?;
         }
-        Examples::Send => beej_net_rs::send()?,
-        Examples::Recv => beej_net_rs::recv()?,
-        Examples::Sendto => beej_net_rs::sendto()?,
-        Examples::Recvfrom => beej_net_rs::recvfrom()?,
-        Examples::Close => beej_net_rs::close()?,
-        Examples::Shutdown => beej_net_rs::shutdown()?,
-        Examples::Getpeername => beej_net_rs::getpeername()?,
-        Examples::Gethostname => beej_net_rs::gethostname()?,
+        Example::Send => beej_net_rs::send()?,
+        Example::Recv => beej_net_rs::recv()?,
+        Example::Sendto => beej_net_rs::sendto()?,
+        Example::Recvfrom => beej_net_rs::recvfrom()?,
+        Example::Close => beej_net_rs::close()?,
+        Example::Shutdown => beej_net_rs::shutdown()?,
+        Example::Getpeername => beej_net_rs::getpeername()?,
+        Example::Gethostname => beej_net_rs::gethostname()?,
+        Example::Stream { cmd } => match cmd {
+            StreamCommand::Server => beej_net_rs::stream_server()?,
+        },
     };
 
     Ok(())
@@ -44,11 +47,11 @@ fn run() -> Result<(), Box<dyn error::Error>> {
 #[command(version, about, long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
-    examples: Examples,
+    example: Example,
 }
 
 #[derive(Subcommand)]
-pub enum Examples {
+pub enum Example {
     /// Section 5.1 - `getaddrinfo()` - Prepare to Launch!
     #[clap(name = "showip")]
     ShowIp { host: String },
@@ -132,4 +135,16 @@ pub enum Examples {
 
     /// Section 5.11 - `gethostname()` - Who am I?
     Gethostname,
+
+    /// Section 6.1 & 6.2 - A Simple Stream Server & Client
+    Stream {
+        #[command(subcommand)]
+        cmd: StreamCommand,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum StreamCommand {
+    /// Section 6.1 - A Simple Stream Server
+    Server,
 }
