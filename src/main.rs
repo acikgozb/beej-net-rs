@@ -33,6 +33,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Examples::Recvfrom => beej_net_rs::recvfrom()?,
         Examples::Close => beej_net_rs::close()?,
         Examples::Shutdown => beej_net_rs::shutdown()?,
+        Examples::Getpeername => beej_net_rs::getpeername()?,
     };
 
     Ok(())
@@ -118,4 +119,13 @@ pub enum Examples {
     /// Connect to this server in a separate terminal session by using `ncat 127.0.0.1 3490` or via any command you prefer.
     /// Observe that the server cannot send a message due to EPIPE error, which happens because of `shutdown()`.
     Shutdown,
+
+    /// Section 5.10 - `getpeername()` - Who are you?
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "TCP" server.
+    /// Connect to this server in a separate terminal session by using `ncat 127.0.0.1 3490` or via any command you prefer.
+    /// Observe that our server writes the source IP address and it's port to the stdout.
+    Getpeername,
 }
