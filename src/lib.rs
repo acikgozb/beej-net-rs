@@ -28,4 +28,4 @@ pub use sendto::sendto;
 pub use showip::showip;
 pub use shutdown::shutdown;
 pub use socket::socket;
-pub use stream::server as stream_server;
+pub use stream::{client as stream_client, server as stream_server};

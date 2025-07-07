@@ -37,6 +37,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Example::Gethostname => beej_net_rs::gethostname()?,
         Example::Stream { cmd } => match cmd {
             StreamCommand::Server => beej_net_rs::stream_server()?,
+            StreamCommand::Client => beej_net_rs::stream_client()?,
         },
     };
 
@@ -146,5 +147,16 @@ pub enum Example {
 #[derive(Subcommand)]
 pub enum StreamCommand {
     /// Section 6.1 - A Simple Stream Server
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "TCP" server.
+    /// In a separate terminal session, run the client command `beej_net_rs stream client`.
+    /// Observe that the server sends the message "Hello world!" to the client.
     Server,
+    /// Section 6.2 - A Simple Stream Client
+    ///
+    /// To test this example, check out `beej_net_rs help stream server`.
+    /// You can also observe ECONNREFUSED error by running this command first before the server command.
+    Client,
 }
