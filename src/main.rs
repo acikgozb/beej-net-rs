@@ -43,6 +43,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
             DgramCommand::Server => beej_net_rs::dgram_server()?,
             DgramCommand::Client => beej_net_rs::dgram_client()?,
         },
+        Example::Blocking => beej_net_rs::blocking()?,
     };
 
     Ok(())
@@ -152,6 +153,9 @@ pub enum Example {
         #[command(subcommand)]
         cmd: DgramCommand,
     },
+
+    /// Section 7.1 - Blocking
+    Blocking,
 }
 
 #[derive(Subcommand)]
