@@ -1,5 +1,6 @@
 mod accept;
 mod bind;
+mod blocking;
 mod close;
 mod connect;
 mod dgram;
@@ -17,6 +18,7 @@ mod stream;
 
 pub use accept::accept;
 pub use bind::{bind, reuse_port};
+pub use blocking::blocking;
 pub use close::close;
 pub use connect::connect;
 pub use dgram::{client as dgram_client, server as dgram_server};
