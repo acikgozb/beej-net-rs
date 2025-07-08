@@ -39,6 +39,9 @@ fn run() -> Result<(), Box<dyn error::Error>> {
             StreamCommand::Server => beej_net_rs::stream_server()?,
             StreamCommand::Client => beej_net_rs::stream_client()?,
         },
+        Example::Dgram { cmd } => match cmd {
+            DgramCommand::Server => beej_net_rs::dgram_server()?,
+        },
     };
 
     Ok(())
@@ -142,6 +145,12 @@ pub enum Example {
         #[command(subcommand)]
         cmd: StreamCommand,
     },
+
+    /// Section 6.3 - Datagram Sockets
+    Dgram {
+        #[command(subcommand)]
+        cmd: DgramCommand,
+    },
 }
 
 #[derive(Subcommand)]
@@ -159,4 +168,10 @@ pub enum StreamCommand {
     /// To test this example, check out `beej_net_rs help stream server`.
     /// You can also observe ECONNREFUSED error by running this command first before the server command.
     Client,
+}
+
+#[derive(Subcommand)]
+pub enum DgramCommand {
+    /// Section 6.3 - Datagram Sockets
+    Server,
 }

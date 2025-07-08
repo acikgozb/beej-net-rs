@@ -68,7 +68,6 @@ pub fn server() -> Result<(), Error> {
         }
     }?;
 
-    // traverse the linked list and find a proper addr that can be used as a sock and bind
     let mut sock_fd = -1;
     while !gai_res_ptr.is_null() {
         let gai_res = unsafe { *gai_res_ptr };
