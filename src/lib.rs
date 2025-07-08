@@ -19,7 +19,7 @@ pub use accept::accept;
 pub use bind::{bind, reuse_port};
 pub use close::close;
 pub use connect::connect;
-pub use dgram::server as dgram_server;
+pub use dgram::{client as dgram_client, server as dgram_server};
 pub use gethostname::gethostname;
 pub use getpeername::getpeername;
 pub use listen::listen;

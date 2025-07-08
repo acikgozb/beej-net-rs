@@ -41,6 +41,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         },
         Example::Dgram { cmd } => match cmd {
             DgramCommand::Server => beej_net_rs::dgram_server()?,
+            DgramCommand::Client => beej_net_rs::dgram_client()?,
         },
     };
 
@@ -173,5 +174,19 @@ pub enum StreamCommand {
 #[derive(Subcommand)]
 pub enum DgramCommand {
     /// Section 6.3 - Datagram Sockets
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "UDP" server.
+    /// In a separate terminal session, run the client command `beej_net_rs dgram client`.
+    /// Observe that the server receives the message "Hello UDP server!" from the client.
     Server,
+
+    /// Section 6.3 - Datagram Sockets
+    ///
+    /// To test this example, check out `beej_net_rs help dgram server`.
+    /// You can also observe the nature of UDP packets by just running this command without the server. You will see that the packets will be sent without any errors.
+    ///
+    /// That's the gist with datagram sockets, the data sent through them is not guaranteed to arrive at the destination!
+    Client,
 }
