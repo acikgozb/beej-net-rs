@@ -45,6 +45,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         },
         Example::Blocking => beej_net_rs::blocking()?,
         Example::Poll => beej_net_rs::poll()?,
+        Example::Pollserver => beej_net_rs::pollserver()?,
     };
 
     Ok(())
@@ -160,6 +161,17 @@ pub enum Example {
 
     /// Section 7.2 - `poll()` - Synchronous I/O Multiplexing
     Poll,
+
+    /// Section 7.2 - `poll()` - Synchronous I/O Multiplexing
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "TCP" server.
+    /// Create connections from multiple terminal sessions via `telnet 127.0.0.1 9034` or via any command you prefer.
+    /// Send messages from each terminal session to observe the server sending each message to all other clients.
+    /// Close a client connection to observe that our server acknowleges it.
+    /// Send messages from remaining connections to see that server does not try to send each message to the closed connections.
+    Pollserver,
 }
 
 #[derive(Subcommand)]
