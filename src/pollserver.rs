@@ -104,6 +104,8 @@ pub fn pollserver() -> Result<(), Error> {
     println!("pollserver: waiting for connections...");
 
     loop {
+        // SAFETY: The pollfd buf is initialized properly.
+        // There are no reads to uninitialized memory, hence `poll()` is safe to use.
         let poll_count = unsafe { libc::poll(pfds.as_mut_ptr(), pfds.len() as u64, -1) };
         match poll_count {
             -1 => Err(Error::Poll(io::Error::last_os_error())),
@@ -118,16 +120,20 @@ pub fn pollserver() -> Result<(), Error> {
 fn get_listener_socket() -> Result<i32, Error> {
     let port = CString::from(c"9034");
 
+    // SAFETY: All zero hints is a valid initialization.
+    // Required fields are set later on.
     let mut hints: libc::addrinfo = unsafe { mem::zeroed() };
     hints.ai_family = libc::AF_INET;
     hints.ai_socktype = libc::SOCK_STREAM;
 
     let mut gai_res_ptr: *mut libc::addrinfo = ptr::null_mut();
 
+    // SAFETY: There are no uninitialized reads. `getaddrinfo()` is safe to use.
     let ecode = unsafe { libc::getaddrinfo(ptr::null(), port.as_ptr(), &hints, &mut gai_res_ptr) };
     match ecode {
         0 => Ok(()),
         _ => {
+            // SAFETY: `gai_strerror` is valid to call on a failed `getaddrinfo()` call.
             let err = unsafe { CStr::from_ptr(libc::gai_strerror(ecode)).to_string_lossy() };
             Err(Error::Getaddrinfo(err.into_owned()))
         }
@@ -136,9 +142,11 @@ fn get_listener_socket() -> Result<i32, Error> {
     let mut sock_fd = -1;
 
     while !gai_res_ptr.is_null() {
+        // SAFETY: `gai_res_ptr` is guaranteed to point atleast one valid addrinfo struct on a successful `getaddrinfo()` call.
         let ai = unsafe { *gai_res_ptr };
         let next_ai_ptr = ai.ai_next;
 
+        // SAFETY: `socket()` is safe to call since `gai_res` is valid.
         let sock = unsafe { libc::socket(ai.ai_family, ai.ai_socktype, 0) };
         if sock == -1 {
             if next_ai_ptr.is_null() {
@@ -150,6 +158,7 @@ fn get_listener_socket() -> Result<i32, Error> {
         }
 
         let yes: i32 = 1;
+        // SAFETY: `setsockopt()` is called for a valid sock_fd created by a successful `socket()` call, making it safe to use.
         let ecode = unsafe {
             libc::setsockopt(
                 sock,
@@ -182,9 +191,11 @@ fn get_listener_socket() -> Result<i32, Error> {
         break;
     }
 
+    // SAFETY: `gai_res_ptr` will not be used after this call, therefore it is safe to free it.
     unsafe { libc::freeaddrinfo(gai_res_ptr) };
 
     const BACKLOG: i32 = 10;
+    // SAFETY: The `sock_fd` used for `listen()` is guaranteed to be valid due to above, making `listen()` safe to use.
     let ecode = unsafe { libc::listen(sock_fd, BACKLOG) };
     match ecode {
         -1 => Err(Error::Listen(io::Error::last_os_error())),
@@ -228,9 +239,12 @@ fn process_connections(listener_fd: i32, pfds: &Pfds) -> Vec<PfdChange> {
 }
 
 fn accept_new_client(sock_fd: i32) -> i32 {
+    // SAFETY: Initializing `sockaddr` as all zeroes is a valid initialization.
+    // It will be filled by `accept()`.
     let mut sockaddr: libc::sockaddr_storage = unsafe { mem::zeroed() };
     let mut len = mem::size_of_val(&sockaddr);
 
+    // SAFETY: There are no reads to uninitialized memory, making `accept()` safe to use.
     let (conn_sock_fd, sockaddr) = unsafe {
         let sock = libc::accept(
             sock_fd,
@@ -258,6 +272,7 @@ fn send_message_to_clients(source_fd: i32, dest_fds: impl Iterator<Item = i32>) 
     let mut recv_buf = vec![0; 256];
     let len = recv_buf.len();
 
+    // SAFETY: The buffer is initialized as desired, making `recv()` safe to use.
     let bytes = unsafe {
         libc::recv(
             source_fd,
@@ -273,6 +288,7 @@ fn send_message_to_clients(source_fd: i32, dest_fds: impl Iterator<Item = i32>) 
         }
         eprintln!("pollserver: socket {} hung up", source_fd);
 
+        // SAFETY: If a `recv()` fails for a socket, the process stops listening it. Therefore, `close()` is safe to call. There will be no more messages coming through that socket.
         unsafe { libc::close(source_fd) };
 
         Some(source_fd)
@@ -289,6 +305,7 @@ fn send_message_to_clients(source_fd: i32, dest_fds: impl Iterator<Item = i32>) 
         for fd in dest_fds {
             let bytes: usize = bytes.try_into().unwrap();
 
+            // SAFETY: `recv_buf` is safe to use, making `send()` safe.
             let ecode =
                 unsafe { libc::send(fd, recv_buf.as_mut_ptr() as *const libc::c_void, bytes, 0) };
             if ecode == -1 {
@@ -303,11 +320,13 @@ fn send_message_to_clients(source_fd: i32, dest_fds: impl Iterator<Item = i32>) 
 fn try_into_ip_addr(sockaddr: libc::sockaddr_storage) -> Option<IpAddr> {
     match sockaddr.ss_family as i32 {
         libc::AF_INET => {
+            // SAFETY: `ss_family == AF_INET` means that it is safe to cast `sockaddr_storage` to `sockaddr_in`.
             let sockaddr_in = unsafe { *(&raw const sockaddr as *const libc::sockaddr_in) };
             let bits = u32::from_be(sockaddr_in.sin_addr.s_addr);
             Some(IpAddr::V4(Ipv4Addr::from_bits(bits)))
         }
         libc::AF_INET6 => {
+            // SAFETY: `ss_family == AF_INET6` means that it is safe to cast `sockaddr_storage` to `sockaddr_in6`.
             let sockaddr_in6 = unsafe { *(&raw const sockaddr as *const libc::sockaddr_in6) };
             let bits = u128::from_be_bytes(sockaddr_in6.sin6_addr.s6_addr);
             Some(IpAddr::V6(Ipv6Addr::from_bits(bits)))
