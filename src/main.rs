@@ -46,6 +46,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Example::Blocking => beej_net_rs::blocking()?,
         Example::Poll => beej_net_rs::poll()?,
         Example::Pollserver => beej_net_rs::pollserver()?,
+        Example::Select => beej_net_rs::select()?,
     };
 
     Ok(())
@@ -172,6 +173,9 @@ pub enum Example {
     /// Close a client connection to observe that our server acknowleges it.
     /// Send messages from remaining connections to see that server does not try to send each message to the closed connections.
     Pollserver,
+
+    /// Section 7.3 - `select()` - Synchronous I/O Multiplexing, Old School
+    Select,
 }
 
 #[derive(Subcommand)]
