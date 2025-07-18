@@ -47,6 +47,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Example::Poll => beej_net_rs::poll()?,
         Example::Pollserver => beej_net_rs::pollserver()?,
         Example::Select => beej_net_rs::select()?,
+        Example::Selectserver => beej_net_rs::selectserver()?,
     };
 
     Ok(())
@@ -176,6 +177,17 @@ pub enum Example {
 
     /// Section 7.3 - `select()` - Synchronous I/O Multiplexing, Old School
     Select,
+
+    /// Section 7.3 - `select()` - Synchronous I/O Multiplexing, Old School
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "TCP" server.
+    /// Create connections from multiple terminal sessions via `telnet 0.0.0.0 9034` or via any command you prefer.
+    /// Send messages from each terminal session to observe the server sending each message to all other clients.
+    /// Close a client connection to observe that our server acknowleges it.
+    /// Send messages from remaining connections to see that server does not try to send each message to the closed connections.
+    Selectserver,
 }
 
 #[derive(Subcommand)]
