@@ -177,6 +177,8 @@ fn get_listener_socket() -> Result<i32, Error> {
             }
         }
 
+        // SAFETY: The socket and address used for `bind()` are valid due to `socket()` and `getaddrinfo()` calls above.
+        // Bind is safe to call.
         let ecode = unsafe { libc::bind(sock, ai.ai_addr, ai.ai_addrlen) };
         if ecode == -1 {
             if next_ai_ptr.is_null() {
