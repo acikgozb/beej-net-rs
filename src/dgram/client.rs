@@ -33,7 +33,7 @@ pub fn client() -> Result<(), Error> {
     // SAFETY: All zero hints is a valid initialization.
     // Required fields are set later on.
     let mut hints: libc::addrinfo = unsafe { mem::zeroed() };
-    hints.ai_family = libc::AF_INET6;
+    hints.ai_family = libc::AF_INET;
     hints.ai_socktype = libc::SOCK_DGRAM;
 
     let mut gai_res_ptr: *mut libc::addrinfo = ptr::null_mut();
