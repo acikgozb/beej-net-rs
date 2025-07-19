@@ -16,40 +16,49 @@ fn run() -> Result<(), Box<dyn error::Error>> {
     let cli = Cli::parse();
 
     match cli.example {
-        Example::ShowIp { host } => bjrs::showip(&host)?,
-        Example::Socket => bjrs::socket()?,
-        Example::Bind { reuse_port } => match reuse_port {
-            true => bjrs::reuse_port()?,
-            false => bjrs::bind()?,
+        Example::Syscall { cmd } => match cmd {
+            SyscallCommand::Getaddrinfo { host } => bjrs::syscall::getaddrinfo(&host)?,
+            SyscallCommand::Socket => bjrs::syscall::socket()?,
+            SyscallCommand::Bind { reuse_port } => {
+                if reuse_port {
+                    bjrs::syscall::reuse_port()
+                } else {
+                    bjrs::syscall::bind()
+                }?
+            }
+            SyscallCommand::Connect => bjrs::syscall::connect()?,
+            SyscallCommand::Listen => bjrs::syscall::listen()?,
+            SyscallCommand::Accept => {
+                let _ = bjrs::syscall::accept()?;
+            }
+            SyscallCommand::Send => bjrs::syscall::send()?,
+            SyscallCommand::Recv => bjrs::syscall::recv()?,
+            SyscallCommand::Sendto => bjrs::syscall::sendto()?,
+            SyscallCommand::Recvfrom => bjrs::syscall::recvfrom()?,
+            SyscallCommand::Close => bjrs::syscall::close()?,
+            SyscallCommand::Shutdown => bjrs::syscall::shutdown()?,
+            SyscallCommand::Getpeername => bjrs::syscall::getpeername()?,
+            SyscallCommand::Gethostname => bjrs::syscall::gethostname()?,
         },
-        Example::Connect => bjrs::connect()?,
-        Example::Listen => bjrs::listen()?,
-        Example::Accept => {
-            let _ = bjrs::accept()?;
-        }
-        Example::Send => bjrs::send()?,
-        Example::Recv => bjrs::recv()?,
-        Example::Sendto => bjrs::sendto()?,
-        Example::Recvfrom => bjrs::recvfrom()?,
-        Example::Close => bjrs::close()?,
-        Example::Shutdown => bjrs::shutdown()?,
-        Example::Getpeername => bjrs::getpeername()?,
-        Example::Gethostname => bjrs::gethostname()?,
         Example::Stream { cmd } => match cmd {
-            StreamCommand::Server => bjrs::stream_server()?,
-            StreamCommand::Client => bjrs::stream_client()?,
+            StreamCommand::Server => bjrs::stream::server()?,
+            StreamCommand::Client => bjrs::stream::client()?,
         },
         Example::Dgram { cmd } => match cmd {
-            DgramCommand::Server => bjrs::dgram_server()?,
-            DgramCommand::Client => bjrs::dgram_client()?,
+            DgramCommand::Server => bjrs::dgram::server()?,
+            DgramCommand::Client => bjrs::dgram::client()?,
         },
-        Example::Blocking => bjrs::blocking()?,
-        Example::Poll => bjrs::poll()?,
-        Example::Pollserver => bjrs::pollserver()?,
-        Example::Select => bjrs::select()?,
-        Example::Selectserver => bjrs::selectserver()?,
-        Example::Broadcaster { host, msg } => bjrs::broadcaster(host, msg)?,
-    };
+        Example::Techniques { cmd } => match cmd {
+            TechniquesCommand::Blocking => bjrs::techniques::blocking()?,
+            TechniquesCommand::Poll => bjrs::techniques::poll()?,
+            TechniquesCommand::Pollserver => bjrs::techniques::pollserver()?,
+            TechniquesCommand::Select => bjrs::techniques::select()?,
+            TechniquesCommand::Selectserver => bjrs::techniques::selectserver()?,
+            TechniquesCommand::Broadcaster { host, msg } => {
+                bjrs::techniques::broadcaster(&host, &msg)?
+            }
+        },
+    }
 
     Ok(())
 }
@@ -62,13 +71,37 @@ pub struct Cli {
 }
 
 #[derive(Subcommand)]
-pub enum Example {
+enum Example {
+    #[clap(alias = "sys")]
+    Syscall {
+        #[command(subcommand)]
+        cmd: SyscallCommand,
+    },
+
+    /// Section 6.1 & 6.2 - A Simple Stream Server & Client
+    Stream {
+        #[command(subcommand)]
+        cmd: StreamCommand,
+    },
+
+    /// Section 6.3 - Datagram Sockets
+    Dgram {
+        #[command(subcommand)]
+        cmd: DgramCommand,
+    },
+
+    Techniques {
+        #[command(subcommand)]
+        cmd: TechniquesCommand,
+    },
+}
+
+#[derive(Subcommand)]
+enum SyscallCommand {
     /// Section 5.1 - `getaddrinfo()` - Prepare to Launch!
-    #[clap(name = "showip")]
-    ShowIp { host: String },
+    Getaddrinfo { host: String },
 
     /// Section 5.2 - `socket()` - Get the File Descriptor!
-    #[clap(name = "sock")]
     Socket,
 
     /// Section 5.3 - `bind()` - What Port Am I On?
@@ -146,19 +179,48 @@ pub enum Example {
 
     /// Section 5.11 - `gethostname()` - Who am I?
     Gethostname,
+}
 
-    /// Section 6.1 & 6.2 - A Simple Stream Server & Client
-    Stream {
-        #[command(subcommand)]
-        cmd: StreamCommand,
-    },
+#[derive(Subcommand)]
+pub enum StreamCommand {
+    /// Section 6.1 - A Simple Stream Server
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "TCP" server.
+    /// In a separate terminal session, run the client command `beej_net_rs stream client`.
+    /// Observe that the server sends the message "Hello world!" to the client.
+    Server,
+
+    /// Section 6.2 - A Simple Stream Client
+    ///
+    /// To test this example, check out `beej_net_rs help stream server`.
+    /// You can also observe ECONNREFUSED error by running this command first before the server command.
+    Client,
+}
+
+#[derive(Subcommand)]
+pub enum DgramCommand {
+    /// Section 6.3 - Datagram Sockets
+    ///
+    /// To test this example:
+    ///
+    /// Run this command to start our "UDP" server.
+    /// In a separate terminal session, run the client command `beej_net_rs dgram client`.
+    /// Observe that the server receives the message "Hello UDP server!" from the client.
+    Server,
 
     /// Section 6.3 - Datagram Sockets
-    Dgram {
-        #[command(subcommand)]
-        cmd: DgramCommand,
-    },
+    ///
+    /// To test this example, check out `beej_net_rs help dgram server`.
+    /// You can also observe the nature of UDP packets by just running this command without the server. You will see that the packets will be sent without any errors.
+    ///
+    /// That's the gist with datagram sockets, the data sent through them is not guaranteed to arrive at the destination!
+    Client,
+}
 
+#[derive(Subcommand)]
+enum TechniquesCommand {
     /// Section 7.1 - Blocking
     Blocking,
 
@@ -207,41 +269,4 @@ pub enum Example {
         /// The message to send.
         msg: String,
     },
-}
-
-#[derive(Subcommand)]
-pub enum StreamCommand {
-    /// Section 6.1 - A Simple Stream Server
-    ///
-    /// To test this example:
-    ///
-    /// Run this command to start our "TCP" server.
-    /// In a separate terminal session, run the client command `beej_net_rs stream client`.
-    /// Observe that the server sends the message "Hello world!" to the client.
-    Server,
-    /// Section 6.2 - A Simple Stream Client
-    ///
-    /// To test this example, check out `beej_net_rs help stream server`.
-    /// You can also observe ECONNREFUSED error by running this command first before the server command.
-    Client,
-}
-
-#[derive(Subcommand)]
-pub enum DgramCommand {
-    /// Section 6.3 - Datagram Sockets
-    ///
-    /// To test this example:
-    ///
-    /// Run this command to start our "UDP" server.
-    /// In a separate terminal session, run the client command `beej_net_rs dgram client`.
-    /// Observe that the server receives the message "Hello UDP server!" from the client.
-    Server,
-
-    /// Section 6.3 - Datagram Sockets
-    ///
-    /// To test this example, check out `beej_net_rs help dgram server`.
-    /// You can also observe the nature of UDP packets by just running this command without the server. You will see that the packets will be sent without any errors.
-    ///
-    /// That's the gist with datagram sockets, the data sent through them is not guaranteed to arrive at the destination!
-    Client,
 }
