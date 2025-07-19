@@ -16,38 +16,38 @@ fn run() -> Result<(), Box<dyn error::Error>> {
     let cli = Cli::parse();
 
     match cli.example {
-        Example::ShowIp { host } => beej_net_rs::showip(&host)?,
-        Example::Socket => beej_net_rs::socket()?,
+        Example::ShowIp { host } => bjrs::showip(&host)?,
+        Example::Socket => bjrs::socket()?,
         Example::Bind { reuse_port } => match reuse_port {
-            true => beej_net_rs::reuse_port()?,
-            false => beej_net_rs::bind()?,
+            true => bjrs::reuse_port()?,
+            false => bjrs::bind()?,
         },
-        Example::Connect => beej_net_rs::connect()?,
-        Example::Listen => beej_net_rs::listen()?,
+        Example::Connect => bjrs::connect()?,
+        Example::Listen => bjrs::listen()?,
         Example::Accept => {
-            let _ = beej_net_rs::accept()?;
+            let _ = bjrs::accept()?;
         }
-        Example::Send => beej_net_rs::send()?,
-        Example::Recv => beej_net_rs::recv()?,
-        Example::Sendto => beej_net_rs::sendto()?,
-        Example::Recvfrom => beej_net_rs::recvfrom()?,
-        Example::Close => beej_net_rs::close()?,
-        Example::Shutdown => beej_net_rs::shutdown()?,
-        Example::Getpeername => beej_net_rs::getpeername()?,
-        Example::Gethostname => beej_net_rs::gethostname()?,
+        Example::Send => bjrs::send()?,
+        Example::Recv => bjrs::recv()?,
+        Example::Sendto => bjrs::sendto()?,
+        Example::Recvfrom => bjrs::recvfrom()?,
+        Example::Close => bjrs::close()?,
+        Example::Shutdown => bjrs::shutdown()?,
+        Example::Getpeername => bjrs::getpeername()?,
+        Example::Gethostname => bjrs::gethostname()?,
         Example::Stream { cmd } => match cmd {
-            StreamCommand::Server => beej_net_rs::stream_server()?,
-            StreamCommand::Client => beej_net_rs::stream_client()?,
+            StreamCommand::Server => bjrs::stream_server()?,
+            StreamCommand::Client => bjrs::stream_client()?,
         },
         Example::Dgram { cmd } => match cmd {
-            DgramCommand::Server => beej_net_rs::dgram_server()?,
-            DgramCommand::Client => beej_net_rs::dgram_client()?,
+            DgramCommand::Server => bjrs::dgram_server()?,
+            DgramCommand::Client => bjrs::dgram_client()?,
         },
-        Example::Blocking => beej_net_rs::blocking()?,
-        Example::Poll => beej_net_rs::poll()?,
-        Example::Pollserver => beej_net_rs::pollserver()?,
-        Example::Select => beej_net_rs::select()?,
-        Example::Selectserver => beej_net_rs::selectserver()?,
+        Example::Blocking => bjrs::blocking()?,
+        Example::Poll => bjrs::poll()?,
+        Example::Pollserver => bjrs::pollserver()?,
+        Example::Select => bjrs::select()?,
+        Example::Selectserver => bjrs::selectserver()?,
         Example::Broadcaster { host, msg } => bjrs::broadcaster(host, msg)?,
     };
 
