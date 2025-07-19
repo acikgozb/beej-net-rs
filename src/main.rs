@@ -72,6 +72,7 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 enum Example {
+    /// Chapter 5 - System Calls or Bust
     #[clap(alias = "sys")]
     Syscall {
         #[command(subcommand)]
@@ -90,6 +91,7 @@ enum Example {
         cmd: DgramCommand,
     },
 
+    /// Chapter 7 - Slightly Advanced Techniques
     Techniques {
         #[command(subcommand)]
         cmd: TechniquesCommand,
@@ -188,13 +190,13 @@ pub enum StreamCommand {
     /// To test this example:
     ///
     /// Run this command to start our "TCP" server.
-    /// In a separate terminal session, run the client command `beej_net_rs stream client`.
+    /// In a separate terminal session, run the client command `bjrs stream client`.
     /// Observe that the server sends the message "Hello world!" to the client.
     Server,
 
     /// Section 6.2 - A Simple Stream Client
     ///
-    /// To test this example, check out `beej_net_rs help stream server`.
+    /// To test this example, check out `bjrs help stream server`.
     /// You can also observe ECONNREFUSED error by running this command first before the server command.
     Client,
 }
@@ -206,13 +208,13 @@ pub enum DgramCommand {
     /// To test this example:
     ///
     /// Run this command to start our "UDP" server.
-    /// In a separate terminal session, run the client command `beej_net_rs dgram client`.
+    /// In a separate terminal session, run the client command `bjrs dgram client`.
     /// Observe that the server receives the message "Hello UDP server!" from the client.
     Server,
 
     /// Section 6.3 - Datagram Sockets
     ///
-    /// To test this example, check out `beej_net_rs help dgram server`.
+    /// To test this example, check out `bjrs help dgram server`.
     /// You can also observe the nature of UDP packets by just running this command without the server. You will see that the packets will be sent without any errors.
     ///
     /// That's the gist with datagram sockets, the data sent through them is not guaranteed to arrive at the destination!
@@ -256,7 +258,7 @@ enum TechniquesCommand {
     ///
     /// To test this example:
     ///
-    /// Run `beej_net_rs dgram server` to start our "UDP" server.
+    /// Run `bjrs dgram server` to start our "UDP" server.
     ///
     /// Run this command with three different addresses: loopback (127.0.0.1), your local network's broadcast (192.168.X.255), and the broadcast of zero network (255.255.255.255). The message content does not matter.
     ///

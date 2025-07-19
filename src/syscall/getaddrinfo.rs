@@ -24,7 +24,7 @@ impl error::Error for Error {}
 // EXAMPLE: Prints the IP address of the given host.
 // Section 5.1 - `getaddrinfo()` - Prepare to Launch!
 // MANPAGE: man 3 getaddrinfo
-pub fn showip(host: &str) -> Result<(), Error> {
+pub fn getaddrinfo(host: &str) -> Result<(), Error> {
     let node = CString::new(host).unwrap();
     let node: *const libc::c_char = node.as_ptr();
 
