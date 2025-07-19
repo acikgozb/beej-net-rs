@@ -4,7 +4,7 @@ use std::{
     fmt,
     io::{self, Write},
     mem,
-    net::Ipv6Addr,
+    net::Ipv4Addr,
     ptr,
 };
 
@@ -45,8 +45,9 @@ pub fn server() -> Result<(), Error> {
     // SAFETY: All zero hints is a valid initialization.
     // Required fields are set later on.
     let mut hints: libc::addrinfo = unsafe { mem::zeroed() };
-    hints.ai_family = libc::AF_INET6;
+    hints.ai_family = libc::AF_INET;
     hints.ai_socktype = libc::SOCK_DGRAM;
+    hints.ai_flags = libc::AI_PASSIVE;
 
     let mut gai_res_ptr: *mut libc::addrinfo = ptr::null_mut();
 
@@ -129,16 +130,16 @@ pub fn server() -> Result<(), Error> {
     }?;
 
     let sockaddr = match sockaddr.ss_family as i32 {
-        libc::AF_INET6 => {
-            // SAFETY: If `ss_family` is INET6, and we know it is due to `getaddrinfo()`, then `sockaddr_storage` can be casted safely to `sockaddr_in6` to access the data written by `recvfrom()`.
-            let sockaddr_in6 = unsafe { *(&raw const sockaddr as *const libc::sockaddr_in6) };
-            Ok(sockaddr_in6)
+        libc::AF_INET => {
+            // SAFETY: If `ss_family` is INET4, and we know it is due to `getaddrinfo()`, then `sockaddr_storage` can be casted safely to `sockaddr_in` to access the data written by `recvfrom()`.
+            let sockaddr_in = unsafe { *(&raw const sockaddr as *const libc::sockaddr_in) };
+            Ok(sockaddr_in)
         }
         af => Err(Error::InvalidAddrFamily(af)),
     }?;
     let ip_addr = {
-        let bits = u128::from_be_bytes(sockaddr.sin6_addr.s6_addr);
-        Ipv6Addr::from_bits(bits)
+        let bits = u32::from_be(sockaddr.sin_addr.s_addr);
+        Ipv4Addr::from_bits(bits)
     };
 
     println!("listener: got packet from {}", ip_addr);
