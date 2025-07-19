@@ -29,7 +29,7 @@ impl fmt::Display for Error {
 
 impl error::Error for Error {}
 
-// EXAMPLE: A simple stream client that connects to the server created by `beej_net_rs stream server` command.
+// EXAMPLE: A simple stream client that connects to the server created by `bjrs stream server` command.
 // This example is a more complete version of `recv()` syscall example.
 // MANPAGE:
 // man 2 recv (Linux)
