@@ -27,6 +27,7 @@ This repository contains the Rust rewrites of examples that are explained in [Be
     - [Section 7.3 - `select()` - Synchronous I/O Multiplexing, Old School](#section-73-select-synchronous-io-multiplexing-old-school)
     - [Section 7.7 - Broadcast Packets - Hello, World!](#section-77-broadcast-packets-hello-world)
   - [Notes](#notes)
+  - [LICENSE](#license)
 <!--toc:end-->
 
 ## <a id='requirements'></a> Requirements
@@ -216,3 +217,10 @@ If you check the very first example and compare it to the last ones, you will se
 
 This results in an inconsistency between the examples, and I intentionally kept this fact.
 It shows how unsafe Rust effects the thought process the more you write, which is pleasant to reveal.
+
+## <a id='license'></a> LICENSE
+
+This work is dual-licensed under Apache 2.0 and GPL 2.0 (or any later version).
+You can choose between one of them if you use this work.
+
+`SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-or-later`
