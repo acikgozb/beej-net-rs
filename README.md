@@ -1,5 +1,9 @@
 # `bjrs`
 
+This repository contains the Rust rewrites of examples that are explained in [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/).
+
+## Table of Contents
+
 <!--toc:start-->
   - [Requirements](#requirements)
   - [Implementation](#implementation)
@@ -24,8 +28,6 @@
     - [Section 7.7 - Broadcast Packets - Hello, World!](#section-77-broadcast-packets-hello-world)
   - [Notes](#notes)
 <!--toc:end-->
-
-This repository contains the Rust rewrites of examples that are explained in [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/).
 
 ## <a id='requirements'></a> Requirements
 
