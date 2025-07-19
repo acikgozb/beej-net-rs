@@ -3,11 +3,11 @@ use std::{
     io::{self, Write},
 };
 
-use crate::accept;
+use crate::syscall;
 
 #[derive(Debug)]
 pub enum Error {
-    Accept(accept::Error),
+    Accept(syscall::accept::Error),
     Recv(io::Error),
     ZeroBytesRecv(usize),
 }
@@ -28,8 +28,8 @@ impl fmt::Display for Error {
 
 impl error::Error for Error {}
 
-impl From<accept::Error> for Error {
-    fn from(value: accept::Error) -> Self {
+impl From<syscall::accept::Error> for Error {
+    fn from(value: syscall::accept::Error) -> Self {
         Self::Accept(value)
     }
 }
@@ -39,7 +39,7 @@ impl From<accept::Error> for Error {
 // man 2 recv (Linux)
 // man 3 recv (POSIX)
 pub fn recv() -> Result<(), Error> {
-    let conn_sock_fd = crate::accept()?;
+    let conn_sock_fd = syscall::accept()?;
 
     let mut buf: Vec<u8> = vec![0; 30];
     let len = buf.len();

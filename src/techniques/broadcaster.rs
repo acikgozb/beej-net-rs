@@ -38,8 +38,8 @@ impl From<AddrParseError> for Error {
 // man 2 setsockopt
 // man 7 socket
 // man errno
-pub fn broadcaster(host: String, msg: String) -> Result<(), Error> {
-    let host_ip_addr = Ipv4Addr::from_str(&host)?;
+pub fn broadcaster(host: &str, msg: &str) -> Result<(), Error> {
+    let host_ip_addr = Ipv4Addr::from_str(host)?;
 
     // SAFETY: Hardcoded opts are used: An INET DGRAM sock.
     // `socket()` is safe to call.
