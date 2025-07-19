@@ -48,6 +48,7 @@ fn run() -> Result<(), Box<dyn error::Error>> {
         Example::Pollserver => beej_net_rs::pollserver()?,
         Example::Select => beej_net_rs::select()?,
         Example::Selectserver => beej_net_rs::selectserver()?,
+        Example::Broadcaster { host, msg } => bjrs::broadcaster(host, msg)?,
     };
 
     Ok(())
@@ -188,6 +189,24 @@ pub enum Example {
     /// Close a client connection to observe that our server acknowleges it.
     /// Send messages from remaining connections to see that server does not try to send each message to the closed connections.
     Selectserver,
+
+    /// Section 7.7 - Broadcast Packets - Hello, World!
+    ///
+    /// To test this example:
+    ///
+    /// Run `beej_net_rs dgram server` to start our "UDP" server.
+    ///
+    /// Run this command with three different addresses: loopback (127.0.0.1), your local network's broadcast (192.168.X.255), and the broadcast of zero network (255.255.255.255). The message content does not matter.
+    ///
+    /// Observe that the server can receive the broadcast messages.
+    /// Since the UDP server is implemented to recv a single message only, you will need to restart the server while trying different addresses.
+    Broadcaster {
+        /// The host address to send the message.
+        host: String,
+
+        /// The message to send.
+        msg: String,
+    },
 }
 
 #[derive(Subcommand)]
